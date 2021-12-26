@@ -3,6 +3,8 @@ module winget-sync
 go 1.17
 
 require (
+	github.com/jlaffaye/ftp v0.0.0-20211117213618-11820403398b
+	github.com/studio-b12/gowebdav v0.0.0-20211109083228-3f8721cd4b6f
 	gopkg.in/go-playground/pool.v3 v3.1.1
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	gorm.io/driver/sqlite v1.2.6

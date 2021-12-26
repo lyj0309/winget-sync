@@ -1,0 +1,17 @@
+services:
+  volume:
+    image: "xhofe/alist:latest"
+    container_name: "alist"
+    restart: always
+    volumes:
+      - "/etc/alist:/opt/alist/data"
+    ports:
+      - "5244:5244"
+  aliyundrive-webdav:
+    container_name: aliyundrive-webdav
+#    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - 'REFRESH_TOKEN=81a7e9b589a24859a1709d4a9d46931d'
+    image: messense/aliyundrive-webdav
