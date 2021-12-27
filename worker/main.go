@@ -42,11 +42,10 @@ Loop:
 	for {
 		select {
 		case <-t.C:
-			fmt.Printf("%s transferred %v kb (%.2f%%),(%.0f)\n",
+			fmt.Printf("%s , %.2f m/s(%.2f%%) \n",
 				req.URL(),
-				resp.BytesComplete()/1024,
+				resp.BytesPerSecond()/1024/1024,
 				100*resp.Progress(),
-				resp.BytesPerSecond(),
 			)
 
 		case <-resp.Done:
