@@ -39,7 +39,7 @@ func init() {
 func getLatestAppList() model.LatestApps {
 	var mainFests []model.Manifest
 	//db.Select("id", "version", "pathpart").Order("id").Order("version").Where("")
-	db.Model(&model.Manifest{}).Select("id, min(version) as version, pathpart").Group("id").Limit(3).Find(&mainFests)
+	db.Model(&model.Manifest{}).Select("id, min(version) as version, pathpart").Group("id").Find(&mainFests)
 
 	apps := make(model.LatestApps)
 
