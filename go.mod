@@ -3,6 +3,7 @@ module winget-sync
 go 1.17
 
 require (
+	github.com/cavaliercoder/grab v2.0.0+incompatible
 	github.com/jlaffaye/ftp v0.0.0-20211117213618-11820403398b
 	github.com/studio-b12/gowebdav v0.0.0-20211109083228-3f8721cd4b6f
 	gopkg.in/go-playground/pool.v3 v3.1.1

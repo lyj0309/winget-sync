@@ -1,11 +1,7 @@
 package client
 
-import (
-	"os"
-)
-
 type Client interface {
 	Upload(name string)
-	List() []os.FileInfo
+	List() (files []*File)
 	Delete(name string)
 }

@@ -3,24 +3,21 @@ package client
 import (
 	"fmt"
 	"testing"
-	"winget-sync/constants"
 )
 
 func TestAli(t *testing.T) {
-	ali := NewAli()
 	//list := ali.List()
-	ali.Sync()
+	Alic.Upload("123.txt")
+	//ali.Sync()
 }
 
 func TestWb(t *testing.T) {
-	wb := NewWebCenter()
-	list, err := wb.Client.List(constants.WebDavBasePath)
-	if err != nil {
-		fmt.Println(err)
-	}
+	list := WBc.List()
 	for _, entry := range list {
 		fmt.Println(entry.Name)
 	}
+	WBc.Upload("123.txt")
+
 }
 
 //func TestDiff(t *testing.T) {

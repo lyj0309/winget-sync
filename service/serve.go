@@ -5,9 +5,9 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
-	"os"
 	"strings"
 	"time"
+	"winget-sync/client"
 	"winget-sync/constants"
 	"winget-sync/model"
 	"winget-sync/worker"
@@ -16,7 +16,8 @@ import (
 var db *gorm.DB
 
 func init() {
-	err := downloadDb()
+	var err error
+	err = downloadDb()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -33,10 +34,11 @@ func init() {
 	//}
 }
 
+//getLatestAppList
 func getLatestAppList() model.LatestApps {
 	var mainFests []model.Manifest
 	//db.Select("id", "version", "pathpart").Order("id").Order("version").Where("")
-	db.Model(&model.Manifest{}).Select("id, min(version) as version, pathpart").Group("id").Limit(30).Find(&mainFests)
+	db.Model(&model.Manifest{}).Select("id, min(version) as version, pathpart").Group("id").Limit(10).Find(&mainFests)
 
 	apps := make(model.LatestApps)
 
@@ -88,10 +90,11 @@ func getUrlPath(row int) (fullPath string) {
 
 //checkUpdate 检查更新并删除老版本
 func checkUpdate(apps model.LatestApps) (updates []string) {
-	dir, err := os.ReadDir(constants.DownloadDir)
-	if err != nil {
-		return nil
-	}
+	//dir, err := os.ReadDir(constants.DownloadDir)
+	//if err != nil {
+	//	return nil
+	//}
+	dir := client.WBc.List()
 
 	appVerCheck := make(map[string]bool)
 	for id := range apps {
@@ -99,7 +102,7 @@ func checkUpdate(apps model.LatestApps) (updates []string) {
 	}
 
 	for _, entry := range dir {
-		fileName := entry.Name()
+		fileName := entry.Name
 		idIdx := strings.Index(fileName, "-")
 		verIdx := strings.LastIndex(fileName, ".")
 		if idIdx == -1 || verIdx == -1 {
@@ -114,8 +117,9 @@ func checkUpdate(apps model.LatestApps) (updates []string) {
 			appVerCheck[id] = true
 			log.Println(id, ver, "最新版")
 		} else {
-			log.Println(entry.Name(), "删除")
-			os.Remove(constants.DownloadDir + entry.Name())
+			log.Println(entry.Name, "删除")
+			client.WBc.Delete(entry.Name)
+			//os.Remove(constants.DownloadDir + entry.Name())
 		}
 		//entry.Name()
 	}
@@ -124,17 +128,13 @@ func checkUpdate(apps model.LatestApps) (updates []string) {
 			updates = append(updates, s)
 		}
 	}
-	//for _, fest := range mainFests {
-	//
-	//}
 	return
 }
 
 func Start() {
 	appList := getLatestAppList()
 	updates := checkUpdate(appList)
-
-	//fmt.Println(updates)
+	fmt.Println(updates)
 
 	for _, id := range updates {
 		//fmt.Println(id)

@@ -2,73 +2,65 @@ package worker
 
 import (
 	"fmt"
+	"github.com/cavaliercoder/grab"
 	"gopkg.in/go-playground/pool.v3"
 	"gopkg.in/yaml.v3"
-	"io"
 	"log"
 	"net/http"
 	"os"
+	"time"
 	"winget-sync/client"
 	"winget-sync/constants"
 	"winget-sync/model"
 )
 
 var p pool.Pool
-var ali *client.Ali
-var wb *client.WebCenter
+
 var count int
 
 func init() {
 	p = pool.NewLimited(10)
 	//ali = client.NewAli()
-
-	wb = client.NewWebCenter()
 }
 
-func downloadExe(url string, savePath string) {
-	fmt.Println(url, savePath)
-	res, err := http.Get(url)
-	if err != nil {
-		fmt.Println(err)
-	}
+//download 下载文件
+func download(url string, path string) {
+	// create client
+	c := grab.NewClient()
+	req, _ := grab.NewRequest(path, url)
+	// start download
+	fmt.Printf("Downloading %v...\n", req.URL())
+	resp := c.Do(req)
 
-	if exists(savePath) {
-		log.Println("文件存在", savePath)
-		err = os.Remove(savePath)
-		if err != nil {
-			fmt.Println(err)
+	fmt.Printf("  %v\n", resp.HTTPResponse.Status)
+
+	// start UI loop
+	t := time.NewTicker(5 * time.Millisecond)
+	defer t.Stop()
+
+Loop:
+	for {
+		select {
+		case <-t.C:
+			fmt.Printf(path,
+				"  transferred %v / %v kb (%.2f%%)\n",
+				resp.BytesComplete()/1024,
+				resp.Size/1024,
+				100*resp.Progress())
+
+		case <-resp.Done:
+			// download is complete
+			break Loop
 		}
 	}
 
-	f, err := os.Create(savePath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer func() {
-		f.Close()
-		res.Body.Close()
-	}()
-
-	_, err = io.Copy(f, res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
+	// check for errors
+	if err := resp.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Download failed: %v\n", err)
+		os.Exit(1)
 	}
 
-	//exec.Command("mv", savePath, "/root/ftp/wg/").Run()
-
-}
-
-// exists returns whether the given file or directory exists or not
-func exists(path string) bool {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true
-	}
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
+	fmt.Printf("下载完成 ,saved to %v \n", resp.Filename)
 }
 
 func getAppInfo(url string) (info model.YamlAppInfo, err error) {
@@ -100,11 +92,12 @@ func NewDownloadTask(url string) {
 		ddUrl, suffix := info.GetAppDownloadInfo()
 
 		//return
-		pkgName := info.PackageIdentifier + "-" + info.PackageVersion + "." + suffix
-		downloadExe(ddUrl, constants.DownloadDir+pkgName)
-		log.Println(pkgName, "下载完成")
+		fileName := info.PackageIdentifier + "-" + info.PackageVersion + "." + suffix
+		//constants.DownloadDir+pkgName
+		download(ddUrl, constants.DownloadDir+fileName)
 
-		log.Println(pkgName + "上传完成")
+		client.WBc.Upload(fileName)
+		log.Println(fileName + "上传完成")
 
 		count++
 		fmt.Println(count)
