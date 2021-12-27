@@ -96,8 +96,8 @@ func NewDownloadTask(url string) {
 		if err != nil {
 			return
 		}
-
-		client.WBc.Upload(fileName)
+		client.NewWebCenter().Upload(fileName)
+		//client.WBc.Upload(fileName)
 		log.Println(fileName + "上传ftp完成")
 		//client.Alic.Upload(fileName)
 		//log.Println(fileName + "上传ali完成")
