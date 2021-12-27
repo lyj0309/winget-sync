@@ -13,18 +13,16 @@ type Ali struct {
 	Client *gowebdav.Client
 }
 
-func (ali *Ali) Upload(name string) {
+func (ali *Ali) Upload(name string) (err error) {
 
 	b, err := os.ReadFile(constants.DownloadDir + name)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	err = ali.Client.Write(constants.WebDavBasePath+name, b, 0644)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	//f, err := os.Open(constants.DownloadDir + name)
@@ -39,6 +37,7 @@ func (ali *Ali) Upload(name string) {
 	//	return
 	//}
 	//f.Close()
+	return nil
 }
 
 func (ali *Ali) List() (files []*File) {

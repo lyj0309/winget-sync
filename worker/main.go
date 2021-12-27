@@ -3,11 +3,11 @@ package worker
 import (
 	"fmt"
 	"github.com/cavaliercoder/grab"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/pool.v3"
 	"gopkg.in/yaml.v3"
 	"log"
 	"net/http"
-	"os"
 	"time"
 	"winget-sync/client"
 	"winget-sync/constants"
@@ -56,7 +56,6 @@ Loop:
 
 	// check for errors
 	if err := resp.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "下载失败: %v\n", err)
 		return err
 	}
 
@@ -85,6 +84,7 @@ func NewDownloadTask(url string) {
 	p.Queue(func(wu pool.WorkUnit) (data interface{}, err error) {
 		info, err := getAppInfo(url)
 		if err != nil {
+			logrus.Error(err)
 			return
 		}
 		ddUrl, suffix := info.GetAppDownloadInfo()
@@ -94,16 +94,26 @@ func NewDownloadTask(url string) {
 		//constants.DownloadDir+pkgName
 		err = download(ddUrl, constants.DownloadDir+fileName)
 		if err != nil {
+			logrus.Error(err)
 			return
 		}
-		client.NewWebCenter().Upload(fileName)
+		err = client.NewWebCenter().Upload(fileName)
+		if err != nil {
+			logrus.Error("上传ftp失败", err)
+			return
+		}
 		//client.WBc.Upload(fileName)
-		log.Println(fileName + "上传ftp完成")
-		//client.Alic.Upload(fileName)
-		//log.Println(fileName + "上传ali完成")
+		log.Println("上传ftp完成" + fileName)
+
+		err = client.Alic.Upload(fileName)
+		if err != nil {
+			logrus.Error("上传ali失败", err)
+			return
+		}
+		log.Println("上传ali完成" + fileName)
 
 		count++
-		fmt.Println(count)
+		log.Println("下载计数", count)
 		return
 	})
 }

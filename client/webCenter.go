@@ -31,17 +31,18 @@ func (w *WebCenter) name() {
 
 }
 
-func (w *WebCenter) Upload(name string) {
+func (w *WebCenter) Upload(name string) error {
 	f, err := os.Open(constants.DownloadDir + name)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
+
 	err = w.Client.StorFrom(constants.WebDavBasePath+name, f, 0)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
+	defer f.Close()
+	return nil
 }
 
 func (w *WebCenter) List() (files []*File) {
