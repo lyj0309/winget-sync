@@ -3,7 +3,7 @@ services:
     container_name: ali-webdav
 #    restart: unless-stopped
     ports:
-      - '9090:9090'
+      - '9090:8080'
     environment:
       - 'REFRESH_TOKEN='
     image: messense/aliyundrive-webdav

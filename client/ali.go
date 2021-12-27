@@ -100,7 +100,7 @@ func NewAli() *Ali {
 	user := ""
 	password := ""
 	ali := gowebdav.NewClient(root, user, password)
-	_, err := ali.ReadDir("test")
+	_, err := ali.ReadDir("")
 	if err != nil {
 		log.Panicln("阿里云盘连接错误", err)
 	}
