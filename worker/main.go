@@ -24,7 +24,7 @@ func init() {
 }
 
 //download 下载文件
-func download(url string, path string) {
+func download(url string, path string) error {
 	// create client
 	c := grab.NewClient()
 	req, _ := grab.NewRequest(path, url)
@@ -56,11 +56,12 @@ Loop:
 
 	// check for errors
 	if err := resp.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "Download failed: %v\n", err)
-		os.Exit(1)
+		fmt.Fprintf(os.Stderr, "下载失败: %v\n", err)
+		return err
 	}
 
 	fmt.Printf("下载完成 ,saved to %v \n", resp.Filename)
+	return nil
 }
 
 func getAppInfo(url string) (info model.YamlAppInfo, err error) {
@@ -75,9 +76,6 @@ func getAppInfo(url string) (info model.YamlAppInfo, err error) {
 	if err != nil {
 		return
 	}
-
-	//加速
-
 	return
 
 }
@@ -94,7 +92,10 @@ func NewDownloadTask(url string) {
 		//return
 		fileName := info.PackageIdentifier + "-" + info.PackageVersion + "." + suffix
 		//constants.DownloadDir+pkgName
-		download(ddUrl, constants.DownloadDir+fileName)
+		err = download(ddUrl, constants.DownloadDir+fileName)
+		if err != nil {
+			return
+		}
 
 		client.WBc.Upload(fileName)
 		log.Println(fileName + "上传完成")

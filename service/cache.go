@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -27,7 +26,7 @@ func downloadDb() error {
 	}
 	// Read all the files from zip archive
 	for _, zipFile := range zipReader.File {
-		fmt.Println("Reading file:", zipFile.Name)
+		//fmt.Println("Reading file:", zipFile.Name)
 		if zipFile.Name == "Public/index.db" {
 			unzippedFileBytes, err := readZipFile(zipFile)
 			if err != nil {
