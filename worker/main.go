@@ -35,15 +35,15 @@ func download(url string, path string) {
 	fmt.Printf("  %v\n", resp.HTTPResponse.Status)
 
 	// start UI loop
-	t := time.NewTicker(5 * time.Millisecond)
+	t := time.NewTicker(5 * time.Second)
 	defer t.Stop()
 
 Loop:
 	for {
 		select {
 		case <-t.C:
-			fmt.Printf(path,
-				"  transferred %v / %v kb (%.2f%%)\n",
+			fmt.Printf("%s transferred %v / %v kb (%.2f%%)\n",
+				path,
 				resp.BytesComplete()/1024,
 				resp.Size/1024,
 				100*resp.Progress())

@@ -16,7 +16,8 @@ func TestWb(t *testing.T) {
 	for _, entry := range list {
 		fmt.Println(entry.Name)
 	}
-	WBc.Upload("123.txt")
+	WBc.Delete("123.txt")
+	//WBc.Upload("123.txt")
 
 }
 
