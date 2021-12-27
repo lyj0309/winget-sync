@@ -14,7 +14,7 @@ type WebCenter struct {
 }
 
 func NewWebCenter() *WebCenter {
-	c, err := ftp.Dial("210.30.62.70:21", ftp.DialWithTimeout(5*time.Second))
+	c, err := ftp.Dial(constants.FtpAddress, ftp.DialWithTimeout(5*time.Second))
 	if err != nil {
 		log.Fatal(err)
 	}

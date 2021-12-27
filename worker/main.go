@@ -99,8 +99,8 @@ func NewDownloadTask(url string) {
 
 		client.WBc.Upload(fileName)
 		log.Println(fileName + "上传ftp完成")
-		client.Alic.Upload(fileName)
-		log.Println(fileName + "上传ali完成")
+		//client.Alic.Upload(fileName)
+		//log.Println(fileName + "上传ali完成")
 
 		count++
 		fmt.Println(count)

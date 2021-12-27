@@ -7,4 +7,5 @@ const (
 	DownloadDir     = "downloads/"
 	WebDavBasePath  = "winget/"
 	AliWebDavAddr   = "http://localhost:9090"
+	FtpAddress      = "192.168.1.100:21"
 )
