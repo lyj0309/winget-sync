@@ -39,7 +39,6 @@ func (ali *Ali) Upload(name string) {
 	//	return
 	//}
 	//f.Close()
-
 }
 
 func (ali *Ali) List() (files []*File) {
@@ -97,10 +96,15 @@ func (ali Ali) Sync() {
 }
 
 func NewAli() *Ali {
-	root := "http://localhost:8080"
+	root := constants.AliWebDavAddr
 	user := ""
 	password := ""
+	ali := gowebdav.NewClient(root, user, password)
+	_, err := ali.ReadDir("")
+	if err != nil {
+		log.Panicln("阿里云盘连接错误")
+	}
 	return &Ali{
-		Client: gowebdav.NewClient(root, user, password),
+		Client: ali,
 	}
 }

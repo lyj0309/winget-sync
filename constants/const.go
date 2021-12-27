@@ -6,4 +6,5 @@ const (
 	DbDsn           = "index.db?cache=shared&mode=memory"
 	DownloadDir     = "downloads/"
 	WebDavBasePath  = "winget/"
+	AliWebDavAddr   = "http://localhost:9090"
 )
