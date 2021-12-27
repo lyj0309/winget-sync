@@ -133,6 +133,7 @@ func checkUpdate(apps model.LatestApps) (updates []string) {
 }
 
 func Start() {
+	clearCache()
 	appList := getLatestAppList()
 	updates := checkUpdate(appList)
 	fmt.Println(updates)

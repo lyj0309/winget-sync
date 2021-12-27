@@ -50,3 +50,8 @@ func readZipFile(zf *zip.File) ([]byte, error) {
 	return io.ReadAll(f)
 
 }
+
+func clearCache() {
+	os.RemoveAll(constants.DownloadDir)
+	os.Mkdir(constants.DownloadDir, 0644)
+}
