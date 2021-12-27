@@ -16,7 +16,7 @@ import (
 var db *gorm.DB
 
 func init() {
-	fmt.Println("下载数据库中···")
+	log.Println("下载数据库中···")
 	var err error
 	err = downloadDb()
 	if err != nil {
@@ -39,7 +39,7 @@ func init() {
 func getLatestAppList() model.LatestApps {
 	var mainFests []model.Manifest
 	//db.Select("id", "version", "pathpart").Order("id").Order("version").Where("")
-	db.Model(&model.Manifest{}).Select("id, min(version) as version, pathpart").Group("id").Limit(10).Find(&mainFests)
+	db.Model(&model.Manifest{}).Select("id, min(version) as version, pathpart").Group("id").Limit(3).Find(&mainFests)
 
 	apps := make(model.LatestApps)
 
@@ -136,12 +136,12 @@ func Start() {
 	clearCache()
 	appList := getLatestAppList()
 	updates := checkUpdate(appList)
-	fmt.Println(updates)
+	//fmt.Println(updates)
 
 	for _, id := range updates {
 		//fmt.Println(id)
 		appPath := getUrlPath(appList[id].PathpartId)
-		fmt.Println(constants.CacheUrl + appPath)
+		//fmt.Println(constants.CacheUrl + appPath)
 		worker.NewDownloadTask(constants.CacheUrl + appPath)
 		//return
 	}
