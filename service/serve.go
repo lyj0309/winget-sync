@@ -16,6 +16,7 @@ import (
 var db *gorm.DB
 
 func init() {
+	fmt.Println("下载数据库中···")
 	var err error
 	err = downloadDb()
 	if err != nil {

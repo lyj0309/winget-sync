@@ -29,10 +29,10 @@ func download(url string, path string) error {
 	c := grab.NewClient()
 	req, _ := grab.NewRequest(path, url)
 	// start download
-	fmt.Printf("Downloading %v...\n", req.URL())
+	//fmt.Printf("下载 %v中...\n", req.URL())
 	resp := c.Do(req)
 
-	fmt.Printf("  %v\n", resp.HTTPResponse.Status)
+	//fmt.Printf("  %v\n", resp.HTTPResponse.Status)
 
 	// start UI loop
 	t := time.NewTicker(5 * time.Second)
@@ -42,11 +42,12 @@ Loop:
 	for {
 		select {
 		case <-t.C:
-			fmt.Printf("%s transferred %v / %v kb (%.2f%%)\n",
-				path,
+			fmt.Printf("%s transferred %v kb (%.2f%%),(%.0f)\n",
+				req.URL(),
 				resp.BytesComplete()/1024,
-				resp.Size/1024,
-				100*resp.Progress())
+				100*resp.Progress(),
+				resp.BytesPerSecond(),
+			)
 
 		case <-resp.Done:
 			// download is complete
